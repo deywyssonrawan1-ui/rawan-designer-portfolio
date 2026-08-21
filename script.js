@@ -34,6 +34,25 @@ observer.observe(el);
 
 });
 
+const menuToggle = document.querySelector(".menu-toggle");
+const menu = document.querySelector("nav");
+
+if(menuToggle && menu){
+menuToggle.addEventListener("click",()=>{
+const aberto = menu.classList.toggle("open");
+menuToggle.setAttribute("aria-expanded", String(aberto));
+menuToggle.setAttribute("aria-label", aberto ? "Fechar menu" : "Abrir menu");
+});
+
+menu.querySelectorAll("a").forEach(link=>{
+link.addEventListener("click",()=>{
+menu.classList.remove("open");
+menuToggle.setAttribute("aria-expanded", "false");
+menuToggle.setAttribute("aria-label", "Abrir menu");
+});
+});
+}
+
 
 // Destaque automático do menu
 
@@ -82,6 +101,7 @@ const trilha = carrossel.querySelector(".carousel-track");
 const slides = carrossel.querySelectorAll("img");
 const pontos = carrossel.querySelector(".carousel-dots");
 let atual = 0;
+let inicioToque = 0;
 
 slides.forEach((slide, indice)=>{
 
@@ -106,6 +126,17 @@ ponto.classList.toggle("active", indicePonto === atual);
 
 carrossel.querySelector(".previous").addEventListener("click",()=>mostrarSlide(atual - 1));
 carrossel.querySelector(".next").addEventListener("click",()=>mostrarSlide(atual + 1));
+
+carrossel.addEventListener("touchstart", evento=>{
+inicioToque = evento.changedTouches[0].clientX;
+},{passive:true});
+
+carrossel.addEventListener("touchend", evento=>{
+const distancia = evento.changedTouches[0].clientX - inicioToque;
+if(Math.abs(distancia) > 45){
+mostrarSlide(atual + (distancia < 0 ? 1 : -1));
+}
+},{passive:true});
 
 mostrarSlide(0);
 
